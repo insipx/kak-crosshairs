@@ -8,4 +8,4 @@ Highlight Current Line/Column in Kakoune
 - `toggle-current-line-highlight` - Toggle the highlighting of only the current line
 - `toggle-current-column-highlight` - Toggle the highlighting of only the current column
 
-
+Thank You to @alexherbo2 for creating the column highlighter
