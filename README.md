@@ -3,9 +3,9 @@
 
 Highlight Current Line/Column in Kakoune
 
-Commands added by this plugin:
-    - `toggle-crosshairs`
-    - `toggle-current-line-highlight`
-    - `toggle-current-column-highlight`
+### Commands added by this plugin:
+- `toggle-crosshairs` - Toggle the highlighting of the current line and column
+- `toggle-current-line-highlight` - Toggle the highlighting of only the current line
+- `toggle-current-column-highlight` - Toggle the highlighting of only the current column
 
 
