@@ -24,10 +24,10 @@ define-command -hidden highlight-current-line -docstring "Highlight current line
     add-highlighter window/cursor-line line %val{cursor_line} %opt{highlight_line_face}
 }
 
-hook global RawKey .+ show-line-col-highlighters
+hook global RawKey .+ update-line-col-highlighters
 
-define-command -hidden show-line-col-highlighters %{
-    eval %sh{
+define-command -hidden update-line-col-highlighters %{
+    evaluate-commands %sh{
         if [ "$kak_opt_crosshair_mode" = true ] ; then
           echo "highlight-current-line ; highlight-current-column"
         fi
@@ -43,7 +43,7 @@ define-command -hidden show-line-col-highlighters %{
 }
 
 define-command toggle-crosshairs -docstring "Toggle Crosshairs or line/col highlighting" %{
-    eval %sh{
+    evaluate-commands %sh{
         if [ "$kak_opt_crosshair_mode" = true ] ; then
             echo 'set-option global crosshair_mode false'
             echo 'try %(remove-highlighter window/cursor-column)'
@@ -56,7 +56,7 @@ define-command toggle-crosshairs -docstring "Toggle Crosshairs or line/col highl
 }
 
 define-command toggle-current-line-highlight -docstring "Toggle Highlighting for current line" %{
-    eval %sh{
+    evaluate-commands %sh{
         if [ "$kak_opt_highlight_current_line" = true ] ; then
             echo 'set-option global highlight_current_line false'
             echo 'try %(remove-highlighter window/cursor-line)'
@@ -68,7 +68,7 @@ define-command toggle-current-line-highlight -docstring "Toggle Highlighting for
 }
 
 define-command toggle-current-column-highlight -docstring "Toggle highlighting for current column" %{
-    eval %sh{
+    evaluate-commands %sh{
         if [ "$kak_opt_highlight_current_column" = true ] ; then
             echo 'set-option global highlight_current_column false'
             echo 'try %(remove-highlighter window/cursor-column)'
