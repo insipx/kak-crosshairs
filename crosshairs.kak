@@ -24,8 +24,7 @@ define-command -hidden highlight-current-line -docstring "Highlight current line
     add-highlighter window/cursor-line line %val{cursor_line} %opt{highlight_line_face}
 }
 
-hook global NormalKey .+ show-line-col-highlighters
-hook global InsertKey .+ show-line-col-highlighters
+hook global RawKey .+ show-line-col-highlighters
 
 define-command -hidden show-line-col-highlighters %{
     eval %sh{
