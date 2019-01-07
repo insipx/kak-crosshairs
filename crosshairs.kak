@@ -26,21 +26,14 @@ define-command -hidden highlight-current-line -docstring "Highlight current line
 
 hook global RawKey .+ update-line-col-highlighters
 
-define-command -hidden update-line-col-highlighters %{
-    evaluate-commands %sh{
-        if [ "$kak_opt_crosshair_mode" = true ] ; then
-          echo "highlight-current-line ; highlight-current-column"
-        fi
-
-        if [ "$kak_opt_highlight_current_line" = true ] ; then
-          echo "highlight-current-line"
-        fi
-
-        if [ "$kak_opt_highlight_current_column" = true ] ; then
-          echo "highlight-current-column"
-        fi
-    }
-}
+define-command -hidden update-line-col-highlighters %{ evaluate-commands %sh{
+    if [ "$kak_opt_crosshair_mode" = "true" ]; then
+        echo "highlight-current-line; highlight-current-column"
+    else
+        [ "$kak_opt_highlight_current_line" = "true" ] && echo "highlight-current-line"
+        [ "$kak_opt_highlight_current_column" = "true" ] && echo "highlight-current-column"
+    fi
+}}
 
 define-command toggle-crosshairs -docstring "Toggle Crosshairs or line/col highlighting" %{
     evaluate-commands %sh{
