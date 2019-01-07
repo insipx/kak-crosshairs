@@ -16,9 +16,9 @@ define-command -hidden highlight-current-column %{ evaluate-commands -save-regs 
         }
     }
     set-register C %sh{
-        echo $(((kak_cursor_column - kak_main_reg_T) + (kak_main_reg_T * kak_opt_tabstop)))
+        echo $(((kak_cursor_char_column - kak_main_reg_T) + (kak_main_reg_T * kak_opt_tabstop)))
     }
-    add-highlighter window/cursor-column column %reg(C) %opt{highlight_line_face}
+    add-highlighter window/cursor-column column %reg{C} %opt{highlight_line_face}
 }}
 
 define-command -hidden highlight-current-line -docstring "Highlight current line" %{
