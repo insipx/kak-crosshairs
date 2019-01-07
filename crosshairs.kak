@@ -3,28 +3,28 @@ declare-option bool crosshair_mode true
 declare-option bool highlight_current_line false
 declare-option bool highlight_current_column false
 
+hook global RawKey .+ update-line-col-highlighters
+
 define-command -hidden highlight-current-column %{ evaluate-commands -save-regs 'CT' %{
-  try %(remove-highlighter window/cursor-column)
-  evaluate-commands -draft %{
-    try %{
-      execute-keys '<space><a-h>s\t<ret>'
-      set-register T %sh(count() { echo $#; }; count $kak_selections_desc)
-    } catch %{
-      set-register T 0
+    try %(remove-highlighter window/cursor-column)
+    evaluate-commands -draft %{
+        try %{
+            execute-keys '<space><a-h>s\t<ret>'
+            set-register T %sh(count() { echo $#; }; count $kak_selections_desc)
+        } catch %{
+            set-register T 0
+        }
     }
-  }
-  set-register C %sh{
-    echo $(((kak_cursor_column - kak_main_reg_T) + (kak_main_reg_T * kak_opt_tabstop)))
-  }
-  add-highlighter window/cursor-column column %reg(C) %opt{highlight_line_face}
+    set-register C %sh{
+        echo $(((kak_cursor_column - kak_main_reg_T) + (kak_main_reg_T * kak_opt_tabstop)))
+    }
+    add-highlighter window/cursor-column column %reg(C) %opt{highlight_line_face}
 }}
 
 define-command -hidden highlight-current-line -docstring "Highlight current line" %{
     try %{ remove-highlighter window/cursor-line }
-    add-highlighter window/cursor-line line %val{cursor_line} %opt{highlight_line_face}
+    try %{ add-highlighter window/cursor-line line %val{cursor_line} %opt{highlight_line_face} }
 }
-
-hook global RawKey .+ update-line-col-highlighters
 
 define-command -hidden update-line-col-highlighters %{ evaluate-commands %sh{
     if [ "$kak_opt_crosshair_mode" = "true" ]; then
