@@ -1,73 +1,79 @@
-declare-option str highlight_line_face default,rgb:383838+bd
-declare-option bool crosshair_mode true
+set-face global crosshairs_line default,rgb:383838+bd
+set-face global crosshairs_column default,rgb:383838+bd
+
+declare-option bool crosshair_mode false
 declare-option bool highlight_current_line false
 declare-option bool highlight_current_column false
 
-hook global RawKey .+ update-line-col-highlighters
-
-define-command -hidden highlight-current-column %{ evaluate-commands -save-regs 'CT' %{
-    try %(remove-highlighter window/cursor-column)
+define-command -hidden crosshairs-highlight-column %{ evaluate-commands -save-regs 'CT' %{
+    try %(remove-highlighter window/crosshairs-column)
     evaluate-commands -draft %{
         try %{
             execute-keys '<space><a-h>s\t<ret>'
-            set-register T %sh(count() { echo $#; }; count $kak_selections_desc)
+            set-register T %sh(count() { printf "%s\n" $#; }; count $kak_selections_desc)
         } catch %{
             set-register T 0
         }
     }
     set-register C %sh{
-        echo $(((kak_cursor_char_column - kak_main_reg_T) + (kak_main_reg_T * kak_opt_tabstop)))
+        printf "%s\n" "$(((kak_cursor_char_column - kak_main_reg_T) + (kak_main_reg_T * kak_opt_tabstop)))"
     }
-    add-highlighter window/cursor-column column %reg{C} %opt{highlight_line_face}
+    add-highlighter window/crosshairs-column column %reg{C} crosshairs_column
 }}
 
-define-command -hidden highlight-current-line -docstring "Highlight current line" %{
-    try %{ remove-highlighter window/cursor-line }
-    try %{ add-highlighter window/cursor-line line %val{cursor_line} %opt{highlight_line_face} }
+define-command -hidden crosshairs-highlight-line -docstring "Highlight current line" %{
+    try %{ remove-highlighter window/crosshairs-line }
+    try %{ add-highlighter window/crosshairs-line line %val{cursor_line} crosshairs_line }
 }
 
-define-command -hidden update-line-col-highlighters %{ evaluate-commands %sh{
+define-command -hidden crosshairs-update %{ evaluate-commands %sh{
     if [ "$kak_opt_crosshair_mode" = "true" ]; then
-        echo "highlight-current-line; highlight-current-column"
+        printf "%s\n" "crosshairs-highlight-line; crosshairs-highlight-column"
     else
-        [ "$kak_opt_highlight_current_line" = "true" ] && echo "highlight-current-line"
-        [ "$kak_opt_highlight_current_column" = "true" ] && echo "highlight-current-column"
+        [ "$kak_opt_highlight_current_line" = "true" ] && printf "%s\n" "crosshairs-highlight-line"
+        [ "$kak_opt_highlight_current_column" = "true" ] && printf "%s\n" "crosshairs-highlight-column"
     fi
 }}
 
-define-command toggle-crosshairs -docstring "Toggle Crosshairs or line/col highlighting" %{
+define-command crosshairs -docstring "Toggle Crosshairs or line/col highlighting" %{
     evaluate-commands %sh{
         if [ "$kak_opt_crosshair_mode" = true ] ; then
-            echo 'set-option global crosshair_mode false'
-            echo 'try %(remove-highlighter window/cursor-column)'
-            echo 'try %(remove-highlighter window/cursor-line)'
+            printf "%s\n" "set-option global crosshair_mode false"
+            printf "%s\n" "try %(remove-highlighter window/crosshairs-column)"
+            printf "%s\n" "try %(remove-highlighter window/crosshairs-line)"
+            printf "%s\n" "remove-hooks global crosshairs"
         else
-            echo 'set-option global crosshair_mode true'
-            echo 'highlight-current-line; highlight-current-column'
+            printf "%s\n" "set-option global crosshair_mode true"
+            printf "%s\n" "crosshairs-highlight-line; crosshairs-highlight-column"
+            printf "%s\n" "hook global -group crosshairs RawKey .+ crosshairs-update"
         fi
     }
 }
 
-define-command toggle-current-line-highlight -docstring "Toggle Highlighting for current line" %{
+define-command cursorline -docstring "Toggle Highlighting for current line" %{
     evaluate-commands %sh{
         if [ "$kak_opt_highlight_current_line" = true ] ; then
-            echo 'set-option global highlight_current_line false'
-            echo 'try %(remove-highlighter window/cursor-line)'
+            printf "%s\n" "set-option global highlight_current_line false"
+            printf "%s\n" "try %(remove-highlighter window/crosshairs-line)"
+            printf "%s\n" "remove-hooks global crosshairs"
         else
-            echo 'set-option global highlight_current_line true'
-            echo 'highlight-current-line'
+            printf "%s\n" "set-option global highlight_current_line true"
+            printf "%s\n" "crosshairs-highlight-line"
+            printf "%s\n" "hook global -group crosshairs RawKey .+ crosshairs-update"
         fi
     }
 }
 
-define-command toggle-current-column-highlight -docstring "Toggle highlighting for current column" %{
+define-command cursorcolumn -docstring "Toggle highlighting for current column" %{
     evaluate-commands %sh{
         if [ "$kak_opt_highlight_current_column" = true ] ; then
-            echo 'set-option global highlight_current_column false'
-            echo 'try %(remove-highlighter window/cursor-column)'
+            printf "%s\n" "set-option global highlight_current_column false"
+            printf "%s\n" "try %(remove-highlighter window/crosshairs-column)"
+            printf "%s\n" "remove-hooks global crosshairs"
         else
-            echo 'set-option global highlight_current_column true'
-            echo 'highlight-current-column'
+            printf "%s\n" "set-option global highlight_current_column true"
+            printf "%s\n" "crosshairs-highlight-column"
+            printf "%s\n" "hook global -group crosshairs RawKey .+ crosshairs-update"
         fi
     }
 }
