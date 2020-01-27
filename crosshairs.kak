@@ -1,26 +1,15 @@
 set-face global crosshairs_line default,rgb:383838+bd
 set-face global crosshairs_column default,rgb:383838+bd
 
-declare-option bool highlight_current_line false
-declare-option str highlight_current_line_hook_cmd "nop"
-declare-option bool highlight_current_column false
-declare-option str highlight_current_column_hook_cmd "nop"
+declare-option -hidden bool highlight_current_line false
+declare-option -hidden str highlight_current_line_hook_cmd "nop"
+declare-option -hidden bool highlight_current_column false
+declare-option -hidden str highlight_current_column_hook_cmd "nop"
 
-define-command -hidden crosshairs-highlight-column %{ evaluate-commands -save-regs 'CT' %{
-    try %(remove-highlighter window/crosshairs-column)
-    evaluate-commands -draft %{
-        try %{
-            execute-keys '<space><a-h>s\t<ret>'
-            set-register T %sh(count() { printf "%s\n" $#; }; count $kak_selections_desc)
-        } catch %{
-            set-register T 0
-        }
-    }
-    set-register C %sh{
-        printf "%s\n" "$(((kak_cursor_char_column - kak_main_reg_T) + (kak_main_reg_T * kak_opt_tabstop)))"
-    }
-    add-highlighter window/crosshairs-column column %reg{C} crosshairs_column
-}}
+define-command -hidden crosshairs-highlight-column -docstring "Highlight current column" %{
+    try %{ remove-highlighter window/crosshairs-column }
+    try %{ add-highlighter window/crosshairs-column column %val{cursor_display_column} crosshairs_column }
+}
 
 define-command -hidden crosshairs-highlight-line -docstring "Highlight current line" %{
     try %{ remove-highlighter window/crosshairs-line }
